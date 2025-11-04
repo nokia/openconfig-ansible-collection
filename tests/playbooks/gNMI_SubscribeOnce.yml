@@ -1,14 +1,11 @@
 ---
 - name: gNMI Subscribe ONCE
   gather_facts: false
-  hosts: nokia
-
-  collections:
-  - nokia.grpc
+  hosts: all
 
   tasks:
   - name: Get Nodal Configuration (using gNMI Subscribe/ONCE)
-    gnmi_subscribe:
+    nokia.openconfig.gnmi_subscribe:
       mode: ONCE
       subscription:
         - path: /

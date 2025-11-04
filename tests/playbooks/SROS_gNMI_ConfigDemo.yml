@@ -1,7 +1,7 @@
 ---
 - name: gNMI SET/GET demo for Nokia SROS
   gather_facts: false
-  hosts: nokia
+  hosts: nokia_srsim
 
 #  vars:
 #    ansible_grpc_channel_options:

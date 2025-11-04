@@ -1,7 +1,7 @@
 ---
 - name: gNMI Subscribe ONCE for Nokia SR OS
   gather_facts: false
-  hosts: nokia
+  hosts: nokia_srsim
 
   collections:
   - nokia.grpc

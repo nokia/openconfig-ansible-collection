@@ -1,14 +1,11 @@
 ---
 - name: gNMI Capabilities
   gather_facts: false
-  hosts: nokia
-
-  collections:
-  - nokia.grpc
+  hosts: all
 
   tasks:
   - name: gNMI Capabilities
-    gnmi_capabilities:
+    nokia.openconfig.gnmi_capabilities:
     register: testout
 
   - name: dump test output

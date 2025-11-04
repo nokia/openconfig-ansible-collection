@@ -1,14 +1,11 @@
 ---
 - name: Get Configuration using gNMI
   gather_facts: false
-  hosts: nokia
-
-  collections:
-  - nokia.grpc
+  hosts: all
 
   tasks:
   - name: Get Nodal Configuration (using gNMI GET)
-    gnmi_get:
+    nokia.openconfig.gnmi_get:
     register: testout
 
   - name: dump test output

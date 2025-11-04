@@ -1,7 +1,7 @@
 ---
 - name: Nokia SR OS Streaming Telemetry over gNMI
   gather_facts: false
-  hosts: nokia
+  hosts: nokia_srsim
 
   collections:
   - nokia.grpc
