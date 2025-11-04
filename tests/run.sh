@@ -13,7 +13,7 @@
 #      help        Show this help message
 #
 #    Options:
-#      -t, --topo <file>        Containerlab topology file (default: ./topo.clab.yml)
+#      -t, --topo <file>        Containerlab topology file (default: ./topo.ci.clab.yml)
 #      -p, --playbooks <file>   Playbook YAML inventory (default: ./playbooks.yml)
 #      -c, --category <name>    Run only a specific category (default: all)
 #      -q, --quiet              Suppress Ansible playbook logs
@@ -29,7 +29,7 @@ set -euo pipefail
 
 # --- Defaults ----------------------------------------------------------------
 
-TOPOLOGY_FILE="./topo.clab.yml"
+TOPOLOGY_FILE="./topo.ci.clab.yml"
 PLAYBOOK_FILE="./playbooks.yml"
 CATEGORY=""
 RUN_ALL=false

@@ -32,17 +32,17 @@ jobs:
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
 
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libssh-dev
+#      - name: Install System Dependencies
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y libssh-dev
 
       - name: Install Python Requirements
         run: pip install -r requirements.txt
 
-      - name: Install Ansible collections
-        run: |
-          ansible-galaxy collection install ansible.netcommon ansible.utils community.general
+ #     - name: Install Ansible collections
+ #       run: |
+ #         ansible-galaxy collection install ansible.netcommon ansible.utils community.general
 
       - name: Build and install this collection
         run: |
@@ -60,12 +60,12 @@ jobs:
 
       - name: Pull nokia_srsim docker image
         run: |
-          docker pull ghcr.io/nokia/nokia_srsim:latest
           docker pull ghcr.io/nokia/srlinux:latest
-
-      - name: Create license file
-        run: |
-          echo $SRSIM_LICENSE > tests/license.txt
+#         docker pull ghcr.io/nokia/nokia_srsim:latest
+ 
+#      - name: Create license file
+#        run: |
+#          echo $SRSIM_LICENSE > tests/license.txt
 
       - name: Run Tests
         run: |
