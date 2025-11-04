@@ -73,5 +73,5 @@ jobs:
           chmod +x run.sh
           ./run.sh deploy
           cat clab-ansible/ansible-inventory.yml
-          ./run.sh run --category all --quiet --all
+          ./run.sh run --category all --all
           ./run.sh destroy
