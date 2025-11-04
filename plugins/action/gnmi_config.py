@@ -7,7 +7,7 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-from ansible_collections.nokia.grpc.plugins.action.network import (
+from ansible_collections.nokia.openconfig.plugins.action.network import (
     ActionModule as ActionNetworkModule,
 )
 

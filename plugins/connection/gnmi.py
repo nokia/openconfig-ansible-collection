@@ -224,7 +224,7 @@ from ansible.plugins.connection import NetworkConnectionBase
 from ansible.plugins.connection import ensure_connect
 
 from google.protobuf import json_format
-from ansible_collections.nokia.grpc.plugins.connection.pb import gnmi_pb2
+from ansible_collections.nokia.openconfig.plugins.connection.pb import gnmi_pb2
 from ansible.module_utils._text import to_text
 
 
@@ -243,7 +243,7 @@ class Connection(NetworkConnectionBase):
     sub-plugin.
     """
 
-    transport = "nokia.grpc.gnmi"
+    transport = "nokia.openconfig.gnmi"
     has_pipelining = True
 
     def __init__(self, play_context, new_stdin, *args, **kwargs):

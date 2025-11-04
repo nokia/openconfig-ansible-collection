@@ -2,6 +2,8 @@
 - name: gNMI Subscribe ONCE
   gather_facts: false
   hosts: all
+  vars:
+    ansible_connection: nokia.openconfig.gnmi
 
   tasks:
   - name: Get Nodal Configuration (using gNMI Subscribe/ONCE)

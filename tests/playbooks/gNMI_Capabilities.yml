@@ -2,7 +2,9 @@
 - name: gNMI Capabilities
   gather_facts: false
   hosts: all
-
+  vars:
+    ansible_connection: nokia.openconfig.gnmi
+    
   tasks:
   - name: gNMI Capabilities
     nokia.openconfig.gnmi_capabilities:
