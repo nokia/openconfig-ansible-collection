@@ -1,0 +1,70 @@
+# Copyright 2025 Nokia
+# Licensed under the BSD 3-Clause License.
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: ansible
+
+topology:
+  kinds:
+    nokia_srlinux:
+      image: ghcr.io/nokia/srlinux:${SROS_VERSION:=25.7.2}
+    nokia_srsim:
+      image: registry.srlinux.dev/pub/nokia_srsim:${SROS_VERSION:=25.7.R2}
+#      image: ghcr.io/nokia/nokia_srsim:${SROS_VERSION:=25.7.R2}
+      license: ./license.txt
+
+  nodes:
+    sr:
+      kind: nokia_srsim
+      type: sr-1
+      mgmt-ipv4: 172.20.20.110
+      startup-config: |
+        /configure card 1 card-type iom-1
+        /configure card 1 mda 1 mda-type me6-100gb-qsfp28
+        /configure card 1 mda 2 mda-type me12-100gb-qsfp28
+
+        /configure port 1/1/c1 connector breakout c1-100g
+        /configure port 1/1/c1 admin-state enable
+        /configure port 1/1/c1/1 ethernet mode network
+        /configure port 1/1/c1/1 ethernet lldp dest-mac nearest-bridge receive true
+        /configure port 1/1/c1/1 ethernet lldp dest-mac nearest-bridge transmit true
+        /configure port 1/1/c1/1 admin-state enable
+
+        /configure router "Base" router-id 10.0.0.220
+        /configure router "Base" autonomous-system 65000
+
+        /configure router "Base" interface "system" ipv4 primary address 10.0.0.110
+        /configure router "Base" interface "system" ipv4 primary prefix-length 32
+
+        /configure router "Base" interface "toSRL" port 1/1/c1/1
+        /configure router "Base" interface "toSRL" ipv4 primary address 192.168.100.0
+        /configure router "Base" interface "toSRL" ipv4 primary prefix-length 31
+
+        /configure system contact "nokia"
+        /configure system security snmp community "public" access-permissions rwa
+
+    srl:
+      kind: nokia_srlinux
+      type: ixr-h2
+      mgmt-ipv4: 172.20.20.111
+      startup-config: |
+        set / system information contact "nokia"
+
+        set / interface system0 admin-state enable
+        set / interface system0 subinterface 0
+        set / interface system0 subinterface 0 admin-state enable
+        set / interface system0 subinterface 0 ipv4
+        set / interface system0 subinterface 0 ipv4 admin-state enable
+        set / interface system0 subinterface 0 ipv4 address 10.0.0.111/32
+
+        set / interface ethernet-1/1 admin-state enable
+        set / interface ethernet-1/1 subinterface 0
+        set / interface ethernet-1/1 subinterface 0 ipv4
+        set / interface ethernet-1/1 subinterface 0 ipv4 admin-state enable
+        set / interface ethernet-1/1 subinterface 0 ipv4 address 192.168.100.1/31
+
+        set / network-instance default
+        set / network-instance default interface system0.0
+        set / network-instance default interface ethernet-1/1.0
+  links:
+    - endpoints: ["sr:1/1/c1/1", "srl:ethernet-1/1"]
