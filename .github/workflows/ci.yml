@@ -45,6 +45,13 @@ jobs:
           ansible-galaxy collection install ansible.netcommon
 #         ansible-galaxy collection install ansible.netcommon ansible.utils community.general
 
+      - name: Build python wrappers for gRPC proto files
+        run: |
+          cd plugins/connection
+          mkdir -p pb
+          cd proto
+          python -m grpc_tools.protoc -I . --python_out=../pb --grpc_python_out=../pb *.proto
+
       - name: Build and install this collection
         run: |
           ansible-galaxy collection install .
