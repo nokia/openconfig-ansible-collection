@@ -40,9 +40,10 @@ jobs:
       - name: Install Python Requirements
         run: pip install -r requirements.txt
 
- #     - name: Install Ansible collections
- #       run: |
- #         ansible-galaxy collection install ansible.netcommon ansible.utils community.general
+      - name: Install Ansible collections
+        run: |
+          ansible-galaxy collection install ansible.netcommon
+#         ansible-galaxy collection install ansible.netcommon ansible.utils community.general
 
       - name: Build and install this collection
         run: |
