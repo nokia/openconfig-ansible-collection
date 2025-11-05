@@ -34,83 +34,69 @@ options:
     default: inventory_hostname
     vars:
       - name: ansible_host
+
   port:
     type: int
     description:
-      - Specifies the port on the remote device that listens for connections
-        when establishing the gRPC connection. If None only the C(host) part
-        will be used.
-    ini:
-      - section: defaults
-        key: remote_port
-    env:
-      - name: ANSIBLE_REMOTE_PORT
+      - Specifies the TCP port on the remote device that listens for connections
+        when establishing the gRPC connection. The default is 57400.
     vars:
       - name: ansible_port
+
   remote_user:
     description:
-      - The username used to authenticate to the remote device when the gRPC
-        connection is first established.  If the remote_user is not specified,
-        the connection will use the username of the logged in user.
-      - Can be configured from the CLI via the C(--user) or C(-u) options.
-    ini:
-      - section: defaults
-        key: remote_user
-    env:
-      - name: ANSIBLE_REMOTE_USER
+      - Username for gRPC authentication.
     vars:
       - name: ansible_user
+
   password:
     description:
-      - Configures the user password used to authenticate to the remote device
-        when first establishing the gRPC connection.
+      - Password for gRPC authentication.
     vars:
       - name: ansible_password
-      - name: ansible_ssh_pass
-  private_key:
+
+  private_key_file:
+    type: path
     description:
-      - The PEM encoded private key file used to authenticate to the
-        remote device when first establishing the grpc connection.
+      - Path to PEM-encoded private key for client authentication (optional).
     ini:
-      - section: grpc_connection
+      - section: grpc
         key: private_key
-    env:
-      - name: ANSIBLE_PRIVATE_KEY
     vars:
-      - name: ansible_private_key
-  root_ca_certificate:
+      - name: ansible_private_key_file
+
+  root_ca_cert:
+    type: path
     description:
-      - The PEM encoded root CA certificate used to create a SSL-enabled channel.
+      - Path to PEM-encoded root CA certificate for TLS verification (optional).
     ini:
-      - section: grpc_connection
-        key: root_ca_certificate
-    env:
-      - name: ANSIBLE_ROOT_CA_CERTIFICATE
+      - section: grpc
+        key: root_ca_cert
     vars:
-      - name: ansible_root_ca_certificate
-  certificate_chain:
+      - name: ansible_root_ca_cert
+
+  cert_chain:
+    type: path
     description:
-      - The PEM encoded certificate chain file used to create a SSL-enabled channel.
+      - Path to PEM-encoded client certificate chain for mutual TLS (optional).
     ini:
-      - section: grpc_connection
-        key: certificate_chain
+      - section: grpc
+        key: cert_chain
     env:
-      - name: ANSIBLE_CERTIFICATE_CHAIN
+      - name: ANSIBLE_CERT_CHAIN
     vars:
-      - name: ansible_certificate_chain
+      - name: ansible_cert_chain
+
   gnmi_encoding:
     description:
-      - Encoding used for gNMI communication
-      - Must be either JSON or JSON_IETF
-      - If not provided, will run CapabilityRequest for auto-detection
+      - gNMI encoding (JSON or JSON_IETF). Auto-detected if omitted.
     ini:
-      - section: grpc_connection
+      - section: grpc
         key: gnmi_encoding
-    env:
-      - name: ANSIBLE_GNMI_ENCODING
     vars:
       - name: ansible_gnmi_encoding
-  grpc_channel_options:
+
+  channel_options:
     description:
       - Key/Value pairs (dict) to define gRPC channel options to be used
       - gRPC reference
@@ -122,9 +108,13 @@ options:
         subject name that is provided in the host certificate. This is
         needed, because the TLS validates hostname or IP address to avoid
         man-in-the-middle attacks.
+    ini:
+      - section: grpc
+        key: channel_options
     vars:
-      - name: ansible_grpc_channel_options
-  grpc_environment:
+      - name: ansible_channel_options
+
+  grpc_env:
     description:
       - Key/Value pairs (dict) to define environment settings specific to gRPC
       - The standard mechanism to provide/set the environment in Ansible
@@ -136,61 +126,35 @@ options:
       - Set C(HTTPS_PROXY) to specify your proxy settings (if needed).
       - Set C(GRPC_SSL_CIPHER_SUITES) in case the default TLS ciphers do not match
         what is offered by the gRPC server.
+    ini:
+      - section: grpc
+        key: environment
     vars:
-      - name: ansible_grpc_environment
+      - name: ansible_grpc_env
+
   persistent_connect_timeout:
     type: int
     description:
-      - Configures, in seconds, the amount of time to wait when trying to
-        initially establish a persistent connection. If this value expires
-        before the connection to the remote device is completed, the connection
-        will fail.
+      - Timeout (seconds) for establishing the gRPC connection.
     default: 5
-    ini:
-      - section: persistent_connection
-        key: connect_timeout
-    env:
-      - name: ANSIBLE_PERSISTENT_CONNECT_TIMEOUT
-    vars:
-      - name: ansible_connect_timeout
+
   persistent_command_timeout:
     type: int
     description:
-      - Configures the default timeout value (in seconds) when awaiting a
-        response after issuing a call to a RPC. If the RPC does not return
-        before the timeout exceed, an error is generated and the connection
-        is closed.
+      - Timeout (seconds) waiting for gRPC responses.
     default: 300
-    ini:
-      - section: persistent_connection
-        key: command_timeout
-    env:
-      - name: ANSIBLE_PERSISTENT_COMMAND_TIMEOUT
-    vars:
-      - name: ansible_command_timeout
+
   persistent_log_messages:
     type: boolean
     description:
-      - This flag will enable logging the command executed and response received
-        from target device in the ansible log file. For this option to work the
-        'log_path' ansible configuration option is required to be set to a file
-        path with write access.
-      - Be sure to fully understand the security implications of enabling this
-        option as it could create a security vulnerability by logging sensitive
-        information in log file.
+      - Enable logging of gRPC requests/responses to Ansible 'log_path'.
     default: False
-    ini:
-      - section: persistent_connection
-        key: log_messages
-    env:
-      - name: ANSIBLE_PERSISTENT_LOG_MESSAGES
-    vars:
-      - name: ansible_persistent_log_messages
 """
 
 import os
 import re
 import json
+import yaml
 import base64
 import datetime
 
@@ -273,20 +237,20 @@ class Connection(NetworkConnectionBase):
         if self.connected:
             self.queue_message('v', 'gRPC connection to host %s already exist' % self._target)
             return
+        
+        grpcEnv = self.get_option('grpc_env')
+        if grpcEnv:
+            if not isinstance(grpcEnv, dict):
+                grpcEnv=yaml.safe_load(grpcEnv)
 
-        grpcEnv = self.get_option('grpc_environment') or {}
-        if not isinstance(grpcEnv, dict):
-            raise AnsibleConnectionFailure("grpc_environment must be a dict")
-
-        for key in grpcEnv:
-            if grpcEnv[key]:
-                os.environ[key] = str(grpcEnv[key])
-            else:
-                try:
-                    del os.environ[key]
-                except KeyError:
-                    # no such setting in current environment, but thats ok
-                    pass
+            for key in grpcEnv:
+                if grpcEnv[key]:
+                    os.environ[key] = str(grpcEnv[key])
+                else:
+                    try:
+                        del os.environ[key]
+                    except KeyError:
+                        pass # no such setting in current environment, but thats ok
 
         self._login_credentials = [
             ('username', self.get_option('remote_user')),
@@ -296,28 +260,31 @@ class Connection(NetworkConnectionBase):
         host = self.get_option('host')
         port = self.get_option('port') or 57400
         self._target = '%s:%d' % (host, port)
+
         self._timeout = self.get_option('persistent_command_timeout')
 
-        certs = {
-            'root_certificates': self.get_option('root_ca_certificate'),
-            'certificate_chain': self.get_option('certificate_chain'),
-            'private_key':       self.get_option('private_key'),
-        }
+        cert_chain = self.get_option("cert_chain")
+        root_ca_cert = self.get_option("root_ca_cert")
+        private_key_file = self.get_option("private_key_file")
 
-        if isinstance(certs['root_certificates'], str):
-            certs['root_certificates'] = certs['root_certificates'].encode()
-        if isinstance(certs['certificate_chain'], str):
-            certs['certificate_chain'] = certs['certificate_chain'].encode()
-        if isinstance(certs['private_key'], str):
-            certs['private_key'] = certs['private_key'].encode()
+        certs = {}
+        if cert_chain:
+            with open(cert_chain, "rb") as f:
+                certs['certificate_chain'] = f.read()
+        if root_ca_cert:
+            with open(root_ca_cert, "rb") as f:
+                certs['root_certificates'] = f.read()
+        if private_key_file:
+            with open(private_key_file, "rb") as f:
+                certs['private_key'] = f.read()
 
-        options = self.get_option('grpc_channel_options')
+        options = self.get_option('channel_options')
         if options:
             if not isinstance(options, dict):
-                raise AnsibleConnectionFailure("grpc_channel_options must be a dict")
+                options=yaml.safe_load(options)
             options = options.items()
 
-        if certs['root_certificates'] or certs['private_key'] or certs['certificate_chain']:
+        if certs:
             self.queue_message('v', 'Starting secure gRPC connection')
             creds = grpc.ssl_channel_credentials(**certs)
             self._channel = grpc.secure_channel(self._target, creds, options=options)

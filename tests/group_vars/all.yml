@@ -1,2 +1,0 @@
-ansible_port: 57400
-ansible_root_ca_certificate: {{ lookup('file', inventory_dir + '.tls/ca/ca.pem') }}
