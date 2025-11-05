@@ -1,4 +1,4 @@
-# (c) 2020 Nokia
+# (c) 2025 Nokia
 #
 # Licensed under the BSD 3 Clause license
 # SPDX-License-Identifier: BSD-3-Clause
@@ -13,9 +13,9 @@ author:
   - "Hans Thienpondt (@HansThienpondt)"
   - "Sven Wisotzky (@wisotzky)"
 connection: gnmi
-short_description: Provides a persistent gRPC connection for gNMI API service
+short_description: Provides a persistent gRPC connection for OpenConfig API services
 description:
-  - This gRPC plugin provides methods to interact with the gNMI service.
+  - This gRPC plugin provides methods to interact with OpenConfig gRPC services.
   - OpenConfig gNMI specification
     https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-specification.md
   - gNMI API
