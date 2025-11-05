@@ -224,7 +224,7 @@ from ansible.plugins.connection import NetworkConnectionBase
 from ansible.plugins.connection import ensure_connect
 
 from google.protobuf import json_format
-from ansible_collections.nokia.openconfig.plugins.utils import gnmi_pb2
+from ansible_collections.nokia.openconfig.plugins.utils import gnmi_pb2_grpc
 from ansible.module_utils._text import to_text
 
 
