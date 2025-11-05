@@ -67,50 +67,37 @@ options:
     vars:
       - name: ansible_password
       - name: ansible_ssh_pass
-  private_key_file:
+  private_key:
     description:
       - The PEM encoded private key file used to authenticate to the
         remote device when first establishing the grpc connection.
     ini:
       - section: grpc_connection
-        key: private_key_file
+        key: private_key
     env:
-      - name: ANSIBLE_PRIVATE_KEY_FILE
+      - name: ANSIBLE_PRIVATE_KEY
     vars:
-      - name: ansible_private_key_file
-  root_certificates_file:
+      - name: ansible_private_key
+  root_ca_certificate:
     description:
-      - The PEM encoded root certificate file used to create a SSL-enabled
-        channel, if the value is None it reads the root certificates from
-        a default location chosen by gRPC at runtime.
+      - The PEM encoded root CA certificate used to create a SSL-enabled channel.
     ini:
       - section: grpc_connection
-        key: root_certificates_file
+        key: root_ca_certificate
     env:
-      - name: ANSIBLE_ROOT_CERTIFICATES_FILE
+      - name: ANSIBLE_ROOT_CA_CERTIFICATE
     vars:
-      - name: ansible_root_certificates_file
-  certificate_chain_file:
+      - name: ansible_root_ca_certificate
+  certificate_chain:
     description:
-      - The PEM encoded certificate chain file used to create a SSL-enabled
-        channel. If the value is None, no certificate chain is used.
+      - The PEM encoded certificate chain file used to create a SSL-enabled channel.
     ini:
       - section: grpc_connection
-        key: certificate_chain_file
+        key: certificate_chain
     env:
-      - name: ANSIBLE_CERTIFICATE_CHAIN_FILE
+      - name: ANSIBLE_CERTIFICATE_CHAIN
     vars:
-      - name: ansible_certificate_chain_file
-  certificate_path:
-    description:
-      - Folder to search for certificate and key files
-    ini:
-      - section: grpc_connection
-        key: certificate_path
-    env:
-      - name: ANSIBLE_CERTIFICATE_PATH
-    vars:
-      - name: ansible_certificate_path
+      - name: ansible_certificate_chain
   gnmi_encoding:
     description:
       - Encoding used for gNMI communication
@@ -267,49 +254,6 @@ class Connection(NetworkConnectionBase):
 
         self._connected = False
 
-    def readFile(self, optionName):
-        """
-        Reads a binary certificate/key file
-
-        Parameters:
-            optionName(str): used to read filename from options
-
-        Returns:
-            File content
-
-        Raises:
-            AnsibleConnectionFailure: file does not exist or read excpetions
-        """
-        path = self.get_option('certificate_path')
-        if not path:
-            path = '/etc/ssl:/etc/ssl/certs:/etc/ca-certificates'
-
-        filename = self.get_option(optionName)
-        if filename:
-            if filename.startswith('~'):
-                filename = os.path.expanduser(filename)
-            if not filename.startswith('/'):
-                for entry in path.split(':'):
-                    if os.path.isfile(os.path.join(entry, filename)):
-                        filename = os.path.join(entry, filename)
-                        break
-            if os.path.isfile(filename):
-                try:
-                    with open(filename, 'rb') as f:
-                        data = f.read()
-                        if isinstance(data, str):
-                            data = data.encode()
-                        return data
-                except Exception as exc:
-                    raise AnsibleConnectionFailure(
-                        'Failed to read cert/keys file %s: %s' % (filename, exc)
-                    )
-            else:
-                raise AnsibleConnectionFailure(
-                        'Cert/keys file %s does not exist' % filename
-                    )
-        return None
-
     def _connect(self):
         """
         Establish gRPC connection to remote node and create gNMI stub.
@@ -354,10 +298,18 @@ class Connection(NetworkConnectionBase):
         self._target = '%s:%d' % (host, port)
         self._timeout = self.get_option('persistent_command_timeout')
 
-        certs = {}
-        certs['root_certificates'] = self.readFile('root_certificates_file')
-        certs['certificate_chain'] = self.readFile('certificate_chain_file')
-        certs['private_key'] = self.readFile('private_key_file')
+        certs = {
+            'root_certificates': self.get_option('root_ca_certificate'),
+            'certificate_chain': self.get_option('certificate_chain'),
+            'private_key':       self.get_option('private_key'),
+        }
+
+        if isinstance(certs['root_certificates'], str):
+            certs['root_certificates'] = certs['root_certificates'].encode()
+        if isinstance(certs['certificate_chain'], str):
+            certs['certificate_chain'] = certs['certificate_chain'].encode()
+        if isinstance(certs['private_key'], str):
+            certs['private_key'] = certs['private_key'].encode()
 
         options = self.get_option('grpc_channel_options')
         if options:
