@@ -93,6 +93,7 @@ stop_lab() {
 run_playbook() {
   local pb="${1:-}"
   local start_time=$(date +%s)
+  local result=0
 
   # Execute quietly or verbosely
   set +e
@@ -116,6 +117,8 @@ run_playbook() {
     if ! $RUN_ALL; then
       # terminate script
       exit 1
+    else
+      TEST_FAILED=true
     fi
   else
     log OK "$pb succeeded in ${duration}s"
@@ -125,18 +128,24 @@ run_playbook() {
 # --- Test Orchestration ------------------------------------------------------
 
 run_tests() {
+  TEST_FAILED=false
   log INFO "Running playbooks from $PLAYBOOK_FILE"
   for cat in $(yaml_categories); do
     if [[ -n "$CATEGORY" && "$CATEGORY" != "all" && "$CATEGORY" != "$cat" ]]; then
       continue
     fi
-    
+
     log INFO "=== CATEGORY: $cat ==="
 
-    yaml_playbooks "$cat" | while IFS= read -r playbook; do    
+    # Use process substitution to avoid subshell scoping issues
+    while IFS= read -r playbook; do
       run_playbook "$playbook"
-    done
+    done < <(yaml_playbooks "$cat")
   done
+
+  if $TEST_FAILED; then
+    exit 1
+  fi
 }
 
 # --- Sanity Sequence ---------------------------------------------------------

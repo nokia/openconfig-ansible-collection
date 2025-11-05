@@ -31,25 +31,34 @@ Before contributing, ensure your environment includes:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-./tools/run.sh deps
+python -m pip install --upgrade pip
 ```
 
 ### 2. Clone the repository
 
 ```bash
 git clone https://github.com/nokia/openconfig-ansible-collection.git
-cd openconfig-ansible-collection
 ```
 
-### 3. Install dependencies
+### 3. Build and Install collection locally
 
 ```bash
-python -m pip install --upgrade pip
-
-sudo apt-get update
-sudo apt-get install -y libssh-dev
-
 pip install -r requirements.txt
+
+cd openconfig-ansible-collection/plugins/utils
+python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. *.proto
+sed -i 's/^import \(.*_pb2\)/from ansible_collections.nokia.openconfig.plugins.utils import \1/' *
+cd ../..
+ansible-galaxy collection install .
+```
+
+### 4. Install runtime dependencies
+
+Install required Ansible collections
+
+```bash
+ansible-galaxy collection install ansible.netcommon
+ansible-galaxy collection install nokia.srlinux nokia.sros
 ```
 
 Install [containerlab](https://containerlab.dev):
@@ -58,15 +67,10 @@ Install [containerlab](https://containerlab.dev):
 bash -c "$(curl -sL https://get.containerlab.dev)"
 ```
 
-### 4. Prepare images and licenses
+### 5. Prepare images and licenses
 
 Pull `nokia_sros` and `nokia_srlinux` container images and ensure a valid SR OS license file is available.
 
-### 5. Build and install the collection locally
-
-```bash
-ansible-galaxy collection install .
-```
 
 ### 6. Deploy and test the example lab
 
