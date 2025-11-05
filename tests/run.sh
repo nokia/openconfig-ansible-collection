@@ -137,9 +137,10 @@ run_tests() {
 
     log INFO "=== CATEGORY: $cat ==="
 
-    yaml_playbooks "$cat" | while IFS= read -r playbook; do
+    # Use process substitution to avoid subshell scoping issues
+    while IFS= read -r playbook; do
       run_playbook "$playbook"
-    done
+    done < <(yaml_playbooks "$cat")
   done
 
   if $TEST_FAILED; then
