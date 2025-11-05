@@ -43,14 +43,12 @@ jobs:
       - name: Install Ansible collections
         run: |
           ansible-galaxy collection install ansible.netcommon
-#         ansible-galaxy collection install ansible.netcommon ansible.utils community.general
 
       - name: Build python wrappers for gRPC proto files
         run: |
-          cd plugins/connection
-          mkdir -p pb
-          cd proto
-          python -m grpc_tools.protoc -I . --python_out=../pb --grpc_python_out=../pb *.proto
+          cd plugins/utils
+          python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. *.proto
+          sed -i '' 's/^import \(.*_pb2\)/from ansible_collections.nokia.openconfig.plugins.utils import \1/' *
 
       - name: Build and install this collection
         run: |
