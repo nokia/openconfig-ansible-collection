@@ -296,7 +296,10 @@ class Connection(NetworkConnectionBase):
             if os.path.isfile(filename):
                 try:
                     with open(filename, 'rb') as f:
-                        return f.read()
+                        data = f.read()
+                        if isinstance(data, str):
+                            data = data.encode()
+                        return data
                 except Exception as exc:
                     raise AnsibleConnectionFailure(
                         'Failed to read cert/keys file %s: %s' % (filename, exc)
