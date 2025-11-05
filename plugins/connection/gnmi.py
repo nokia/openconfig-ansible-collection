@@ -224,7 +224,7 @@ from ansible.plugins.connection import NetworkConnectionBase
 from ansible.plugins.connection import ensure_connect
 
 from google.protobuf import json_format
-from ansible_collections.nokia.openconfig.plugins.utils import gnmi_pb2_grpc
+from ansible_collections.nokia.openconfig.plugins.utils import gnmi_pb2_grpc as gnmi
 from ansible.module_utils._text import to_text
 
 
@@ -373,21 +373,21 @@ class Connection(NetworkConnectionBase):
                            (self.get_option('remote_user'), self._target))
 
         self.queue_message('v', 'Creating gNMI stub')
-        self._stub = gnmi_pb2.gNMIStub(self._channel)
+        self._stub = gnmi.gNMIStub(self._channel)
 
         self._encoding = self.get_option('gnmi_encoding')
         if not self._encoding:
             self.queue_message('v', 'Run CapabilityRequest()')
-            request = gnmi_pb2.CapabilityRequest()
+            request = gnmi.CapabilityRequest()
             response = self._stub.Capabilities(request, metadata=self._login_credentials)
             self.queue_message('v', 'CapabilityRequest() succeeded')
 
             self._gnmiVersion = response.gNMI_version
             self._yangModels = response.supported_models
 
-            if gnmi_pb2.Encoding.Value('JSON_IETF') in response.supported_encodings:
+            if gnmi.Encoding.Value('JSON_IETF') in response.supported_encodings:
                 self._encoding = 'JSON_IETF'
-            elif gnmi_pb2.Encoding.Value('JSON') in response.supported_encodings:
+            elif gnmi.Encoding.Value('JSON') in response.supported_encodings:
                 self._encoding = 'JSON'
             else:
                 raise AnsibleConnectionFailure("No compatible supported encoding found (JSON or JSON_IETF)")
@@ -395,7 +395,7 @@ class Connection(NetworkConnectionBase):
             if self._encoding not in ['JSON_IETF', 'JSON']:
                 raise AnsibleConnectionFailure("Incompatible encoding '%s' requested (JSON or JSON_IETF)" % self._encoding)
 
-        self._encoding_value = gnmi_pb2.Encoding.Value(self._encoding)
+        self._encoding_value = gnmi.Encoding.Value(self._encoding)
 
         self._connected = True
         self.queue_message('v', 'gRPC/gNMI connection has established successfully')
@@ -426,7 +426,7 @@ class Connection(NetworkConnectionBase):
             xpath (str): path string using XPATH syntax
 
         Returns:
-            (dict): path dict using gnmi_pb2.Path structure for easy conversion
+            (dict): path dict using gnmi.Path structure for easy conversion
         """
         mypath = []
         xpath = xpath.strip('\t\n\r /')
@@ -456,7 +456,7 @@ class Connection(NetworkConnectionBase):
         Decodes XPATH from dict representation converted from gnmi_pb.Path object
 
         Parameters:
-            path (dict): decoded gnmi_pb2.Path object
+            path (dict): decoded gnmi.Path object
 
         Returns:
             (str): path string using XPATH syntax
@@ -661,7 +661,7 @@ class Connection(NetworkConnectionBase):
         Returns:
             str: gNMI capabilities converted into JSON format
         """
-        request = gnmi_pb2.CapabilityRequest()
+        request = gnmi.CapabilityRequest()
         auth = self._login_credentials
 
         try:
@@ -699,7 +699,7 @@ class Connection(NetworkConnectionBase):
             input['type'] = input['type'].upper()
         input['encoding'] = self._encoding_value
 
-        request = json_format.ParseDict(input, gnmi_pb2.GetRequest())
+        request = json_format.ParseDict(input, gnmi.GetRequest())
         auth = self._login_credentials
 
         try:
@@ -754,7 +754,7 @@ class Connection(NetworkConnectionBase):
                 entry['path'] = self._encodeXpath(entry['path'])
                 entry['val'] = self._encodeVal(entry['val'])
 
-        request = json_format.ParseDict(input, gnmi_pb2.SetRequest())
+        request = json_format.ParseDict(input, gnmi.SetRequest())
         auth = self._login_credentials
 
         try:
@@ -813,7 +813,7 @@ class Connection(NetworkConnectionBase):
         else:
             duration = 20
 
-        request = json_format.ParseDict({'subscribe': input}, gnmi_pb2.SubscribeRequest())
+        request = json_format.ParseDict({'subscribe': input}, gnmi.SubscribeRequest())
         auth = self._login_credentials
 
         try:
