@@ -1,0 +1,4 @@
+ansible-core>=2.19.3
+grpcio
+grpcio-tools
+protobuf

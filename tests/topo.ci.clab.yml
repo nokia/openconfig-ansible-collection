@@ -1,0 +1,35 @@
+# Copyright 2025 Nokia
+# Licensed under the BSD 3-Clause License.
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: ansible
+
+topology:
+  kinds:
+    nokia_srlinux:
+      image: ghcr.io/nokia/srlinux:${SROS_VERSION:=25.7.2}
+
+  nodes:
+    srl:
+      kind: nokia_srlinux
+      type: ixr-h2
+      mgmt-ipv4: 172.20.20.111
+      startup-config: |
+        set / system information contact "nokia"
+
+        set / interface system0 admin-state enable
+        set / interface system0 subinterface 0
+        set / interface system0 subinterface 0 admin-state enable
+        set / interface system0 subinterface 0 ipv4
+        set / interface system0 subinterface 0 ipv4 admin-state enable
+        set / interface system0 subinterface 0 ipv4 address 10.0.0.111/32
+
+        set / interface ethernet-1/1 admin-state enable
+        set / interface ethernet-1/1 subinterface 0
+        set / interface ethernet-1/1 subinterface 0 ipv4
+        set / interface ethernet-1/1 subinterface 0 ipv4 admin-state enable
+        set / interface ethernet-1/1 subinterface 0 ipv4 address 192.168.100.1/31
+
+        set / network-instance default
+        set / network-instance default interface system0.0
+        set / network-instance default interface ethernet-1/1.0

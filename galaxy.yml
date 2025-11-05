@@ -1,0 +1,21 @@
+namespace: nokia
+name: openconfig
+version: 1.0.0
+readme: README.md
+authors:
+- Hans Thienpondt (@HansThienpondt)
+- Sven Wisotzky (@wisotzky)
+description: Ansible collection to support networking devices using OpenConfig gRPC APIs
+license: BSD-3-Clause
+tags:
+- ansible
+- grpc
+- gnmi
+- networking
+- yang
+- openconfig
+
+repository: http://github.com/nokia/openconfig-ansible-collection/blob/master/grpc
+documentation: http://github.com/nokia/openconfig-ansible-collection/blob/master/grpc
+homepage: http://github.com/nokia/openconfig-ansible-collection/blob/master/grpc
+issues: http://github.com/nokia/openconfig-ansible-collection/issues

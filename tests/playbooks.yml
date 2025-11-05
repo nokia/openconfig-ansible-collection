@@ -1,0 +1,12 @@
+commission:
+  playbook: playbooks/sros_classic_cli_commission.yml
+
+categories:
+  common:
+    description: "Test cases using native OpenConfig gNMI"
+    playbooks:
+      - playbooks/gNMI_Capabilities.yml
+      - playbooks/gNMI_GetConfig.yml
+      - playbooks/gNMI_SubscribeOnce.yml
+      - playbooks/gNMI_Backup.yml
+      - playbooks/gNMI_Restore.yml

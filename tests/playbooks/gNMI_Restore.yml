@@ -1,0 +1,18 @@
+---
+- name: NE Restore using gNMI
+  gather_facts: false
+  hosts: all
+  vars:
+    ansible_connection: nokia.openconfig.gnmi
+
+  tasks:
+  - name: NE Restore (using gNMI SET)
+    nokia.openconfig.gnmi_config:
+      replace:
+        - path: /
+          val: "{{ lookup('file', '/tmp/'+inventory_hostname+'.config') }}"
+    register: testout
+
+  - name: dump test output
+    debug:
+      msg: '{{ testout.output }}'
