@@ -347,8 +347,8 @@ class Connection(NetworkConnectionBase):
         ]
 
         host = self.get_option('host')
-        port = self.get_option('port')
-        self._target = host if port is None else '%s:%d' % (host, port)
+        port = self.get_option('port') or 57400
+        self._target = '%s:%d' % (host, port)
         self._timeout = self.get_option('persistent_command_timeout')
 
         certs = {}
