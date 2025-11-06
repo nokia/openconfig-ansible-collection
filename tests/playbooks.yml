@@ -9,4 +9,20 @@ categories:
       - playbooks/gNMI_GetConfig.yml
       - playbooks/gNMI_SubscribeOnce.yml
       - playbooks/gNMI_Backup.yml
-      - playbooks/gNMI_Restore.yml
+#      - playbooks/gNMI_Restore.yml
+  openconfig:
+    description: "Test cases using OpenConfig YANG"
+    playbooks:
+      - playbooks/OC_gNMI_GetConfig.yml
+      - playbooks/OC_gNMI_SubscribeSample.yml
+  sros:
+    description: "Test cases using SROS YANG"
+    playbooks:
+      - playbooks/SROS_gNMI_ConfigDemo.yml
+      - playbooks/SROS_gNMI_StreamingTelemetry.yml
+      - playbooks/SROS_gNMI_SubscribeOnce.yml
+  srlinux:
+    description: "Test cases using SROS YANG"
+    playbooks:
+      - playbooks/SRL_gNMI_ConfigDemo.yml
+      - playbooks/SRL_gNMI_SubscribeSample.yml

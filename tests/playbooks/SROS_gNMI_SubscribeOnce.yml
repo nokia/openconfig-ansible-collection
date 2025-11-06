@@ -1,14 +1,14 @@
 ---
-- name: gNMI Subscribe ONCE for Nokia SR OS
+- name: Nokia SR OS Stream Large Configuration
   gather_facts: false
   hosts: nokia_srsim
-
-  collections:
-  - nokia.grpc
+  
+  vars:
+    ansible_connection: nokia.openconfig.gnmi
 
   tasks:
   - name: Get Nodal Configuration (using gNMI Subscribe/ONCE)
-    gnmi_subscribe:
+    nokia.openconfig.gnmi_subscribe:
       mode: ONCE
       subscription:
         - path: /configure
@@ -16,4 +16,5 @@
 
   - name: dump test output
     debug:
-      msg: '{{ testout.output }}'
+      msg: |
+        {{ testout.output | from_json }}

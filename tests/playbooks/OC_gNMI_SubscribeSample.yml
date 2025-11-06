@@ -1,7 +1,7 @@
 ---
-- name: Nokia SR OS Streaming Telemetry
+- name: OpenConfig Streaming Telemetry
   gather_facts: false
-  hosts: nokia_srsim
+  hosts: all
 
   vars:
     ansible_connection: nokia.openconfig.gnmi
@@ -10,13 +10,9 @@
   - name: gNMI streaming telemetry
     nokia.openconfig.gnmi_subscribe:
       duration: 5
-      prefix: /state
       mode: STREAM
       subscription:
-        - path: /port[port-id=1/1/c1/1]/ethernet/statistics
-          mode: SAMPLE
-          sampleInterval: '1000000000'
-        - path: /router[router-name=Base]/interface/statistics
+        - path: /oc:interfaces/interface[name=*]/state/counters
           mode: SAMPLE
           sampleInterval: '1000000000'
     register: testout

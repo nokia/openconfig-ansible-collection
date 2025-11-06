@@ -1,7 +1,8 @@
 ---
-- name: NE Backup using gNMI
+- name: gNMI Backup Configuration
   gather_facts: false
   hosts: all
+
   vars:
     ansible_connection: nokia.openconfig.gnmi
 
@@ -16,4 +17,5 @@
 
   - name: backup details
     debug:
-      msg: "{{backup_info}}"
+      msg: |
+        {{ backup_info }}

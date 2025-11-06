@@ -1,5 +1,5 @@
 ---
-- name: gNMI Subscribe ONCE
+- name: OpenConfig Get Configuration
   gather_facts: false
   hosts: all
 
@@ -7,11 +7,11 @@
     ansible_connection: nokia.openconfig.gnmi
 
   tasks:
-  - name: Get Nodal Configuration (using gNMI Subscribe/ONCE)
-    nokia.openconfig.gnmi_subscribe:
-      mode: ONCE
-      subscription:
-        - path: /
+  - name: Get Nodal Configuration (using gNMI GET)
+    nokia.openconfig.gnmi_get:
+      type: CONFIG
+      path:
+        - /oc:interfaces/interface[name=*]
     register: testout
 
   - name: dump test output

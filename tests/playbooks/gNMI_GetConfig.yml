@@ -1,15 +1,18 @@
 ---
-- name: Get Configuration using gNMI
+- name: gNMI Get Configuration
   gather_facts: false
   hosts: all
+
   vars:
     ansible_connection: nokia.openconfig.gnmi
 
   tasks:
   - name: Get Nodal Configuration (using gNMI GET)
     nokia.openconfig.gnmi_get:
+      type: CONFIG    
     register: testout
 
   - name: dump test output
     debug:
-      msg: '{{ testout.output }}'
+      msg: |
+        {{ testout.output | from_json }}

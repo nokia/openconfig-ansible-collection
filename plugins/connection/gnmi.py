@@ -631,7 +631,7 @@ class Connection(NetworkConnectionBase):
             raise AnsibleConnectionFailure("%s" % e)
 
         output = self._mergeToSingleDict(json_format.MessageToDict(response)['notification'])
-        return json.dumps(output, indent=4).encode()
+        return json.dumps(output, indent=4)
 
     @ensure_connect
     def gnmiSet(self, *args, **kwargs):
@@ -692,7 +692,7 @@ class Connection(NetworkConnectionBase):
         for item in output['response']:
             item['path'] = self._decodeXpath(item['path'])
 
-        return json.dumps(output, indent=4).encode()
+        return json.dumps(output, indent=4)
 
     @ensure_connect
     def gnmiSubscribe(self, *args, **kwargs):
@@ -760,4 +760,4 @@ class Connection(NetworkConnectionBase):
             else:
                 raise AnsibleConnectionFailure("%s" % e)
 
-        return json.dumps(output, indent=4).encode()
+        return json.dumps(output, indent=4)

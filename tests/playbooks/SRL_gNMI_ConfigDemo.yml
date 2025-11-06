@@ -1,0 +1,36 @@
+---
+- name: Nokia SRL Set/Get Configuration
+  gather_facts: false
+  hosts: nokia_srlinux
+
+  vars:
+    ansible_connection: nokia.openconfig.gnmi
+
+  tasks:
+  - name: Get Nodal Configuration (Selective Branches)
+    nokia.openconfig.gnmi_get:
+      type: CONFIG
+      path:
+        - /interface[name=*]
+    register: testout
+
+  - name: dump test output
+    debug:
+      msg: |
+        {{ testout.output | from_json }}
+
+  - name: Update Nodal Configuration (using gNMI SET)
+    nokia.openconfig.gnmi_config:
+      update:
+        - path: "/interface[name=ethernet-1/6]/"
+          val:
+            admin-state: enable
+        - path: "/interface[name=ethernet-1/7]/"
+          val:
+            admin-state: enable
+    register: testout
+
+  - name: dump test output
+    debug:
+      msg: |
+        {{ testout.output | from_json }}

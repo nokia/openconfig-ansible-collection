@@ -10,7 +10,6 @@ topology:
       image: ghcr.io/nokia/srlinux:${SROS_VERSION:=25.7.2}
     nokia_srsim:
       image: registry.srlinux.dev/pub/nokia_srsim:${SROS_VERSION:=25.7.R2}
-      image: ghcr.io/nokia/nokia_srsim:${SROS_VERSION:=25.7.R2}
       license: ./license.txt
 
   nodes:
@@ -18,6 +17,8 @@ topology:
       kind: nokia_srsim
       type: sr-1
       mgmt-ipv4: 172.20.20.110
+      certificate:
+        issue: true      
       startup-config: |
         /configure card 1 card-type iom-1
         /configure card 1 mda 1 mda-type me6-100gb-qsfp28

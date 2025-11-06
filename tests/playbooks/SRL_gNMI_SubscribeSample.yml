@@ -1,20 +1,24 @@
 ---
-- name: gNMI Subscribe ONCE
+- name: Nokia SRL Streaming Telemetry
   gather_facts: false
-  hosts: all
+  hosts: nokia_srlinux
 
   vars:
     ansible_connection: nokia.openconfig.gnmi
 
   tasks:
-  - name: Get Nodal Configuration (using gNMI Subscribe/ONCE)
+  - name: gNMI streaming telemetry
     nokia.openconfig.gnmi_subscribe:
-      mode: ONCE
+      duration: 5
+      mode: STREAM
       subscription:
-        - path: /
+        - path: /interface[name=*]/statistics
+          mode: SAMPLE
+          sampleInterval: '1000000000'
     register: testout
 
   - name: dump test output
     debug:
       msg: |
         {{ testout.output | from_json }}
+

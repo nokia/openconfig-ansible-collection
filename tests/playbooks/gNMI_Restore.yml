@@ -1,7 +1,8 @@
 ---
-- name: NE Restore using gNMI
+- name: gNMI Restore Configuration
   gather_facts: false
   hosts: all
+
   vars:
     ansible_connection: nokia.openconfig.gnmi
 
@@ -15,4 +16,5 @@
 
   - name: dump test output
     debug:
-      msg: '{{ testout.output }}'
+      msg: |
+        {{ testout.output | from_json }}
