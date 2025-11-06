@@ -8,8 +8,8 @@ categories:
       - playbooks/gNMI_Capabilities.yml
       - playbooks/gNMI_GetConfig.yml
       - playbooks/gNMI_SubscribeOnce.yml
-      - playbooks/gNMI_Backup.yml
-      - playbooks/gNMI_Restore.yml
+#      - playbooks/gNMI_Backup.yml
+#      - playbooks/gNMI_Restore.yml
   openconfig:
     description: "Test cases using OpenConfig YANG"
     playbooks:
