@@ -78,7 +78,7 @@ jobs:
       - name: Run Tests
         run: |
           cd tests
-          ./run.sh run --all
+          ./run.sh run --all --quiet
 
       - name: Destroy Lab
         run: |
