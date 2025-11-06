@@ -43,13 +43,15 @@ git clone https://github.com/nokia/openconfig-ansible-collection.git
 ### 3. Build and Install collection locally
 
 ```bash
+cd openconfig-ansible-collection
 pip install -r requirements.txt
 
-cd openconfig-ansible-collection/plugins/utils
+cd plugins/utils
 python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. *.proto
 sed -i 's/^import \(.*_pb2\)/from ansible_collections.nokia.openconfig.plugins.utils import \1/' *
+
 cd ../..
-ansible-galaxy collection install .
+ansible-galaxy collection install . --force
 ```
 
 ### 4. Install runtime dependencies
@@ -83,7 +85,7 @@ chmod +x run.sh
 ### 7. Run all regression tests
 
 ```bash
-./run.sh run --category all --quiet --all
+./run.sh run --quiet --all
 ```
 
 ### 8. Clean up when finished
