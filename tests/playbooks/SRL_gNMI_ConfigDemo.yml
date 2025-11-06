@@ -31,5 +31,5 @@
 
   - name: dump test output
     debug:
-      msg:
+      msg: |
         {{ testout.output }}

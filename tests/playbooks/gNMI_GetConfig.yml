@@ -15,4 +15,4 @@
   - name: dump test output
     debug:
       msg: |
-        {{ testout.output }}
+        {{ testout.output | from_json }}
