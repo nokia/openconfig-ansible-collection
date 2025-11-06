@@ -61,18 +61,26 @@ jobs:
 
       - name: Pull nokia_srsim docker image
         run: |
-          docker pull ghcr.io/nokia/srlinux:latest
-#         docker pull ghcr.io/nokia/nokia_srsim:latest
+          docker pull ghcr.io/nokia/srlinux:25.7.2
+#         docker pull ghcr.io/nokia/nokia_srsim:25.7.R2
  
 #      - name: Create license file
 #        run: |
 #          echo $SRSIM_LICENSE > tests/license.txt
 
-      - name: Run Tests
+      - name: Deploy Lab
         run: |
           cd tests
           chmod +x run.sh
-          ./run.sh deploy
+          ./run.sh deploy --topo ci.clab.yml
           cat clab-ansible/ansible-inventory.yml
-          ./run.sh run --category all --all
-          ./run.sh destroy
+
+      - name: Run Tests
+        run: |
+          cd tests
+          ./run.sh run --all
+
+      - name: Destroy Lab
+        run: |
+          cd tests
+          ./run.sh destroy --topo ci.clab.yml

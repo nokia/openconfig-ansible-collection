@@ -3,20 +3,12 @@
   gather_facts: false
   hosts: nokia_srsim
 
-#  vars:
-#    ansible_grpc_channel_options:
-#      grpc.ssl_target_name_override: 135.228.158.92
-#    ansible_grpc_environment:
-#      GRPC_VERBOSITY: DEBUG
-#      GRPC_TRACE: all
-#    ansible_persistent_log_messages: True
-
-  collections:
-  - nokia.grpc
+  vars:
+    ansible_connection: nokia.openconfig.gnmi
 
   tasks:
   - name: Get Nodal Configuration (Selective Branches)
-    nokia.grpc.gnmi_get:
+    nokia.openconfig.gnmi_get:
       type: CONFIG
       prefix: /configure
       path:
@@ -31,7 +23,7 @@
       msg: '{{ testout.output }}'
 
   - name: Update Nodal Configuration (using gNMI SET)
-    nokia.grpc.gnmi_config:
+    nokia.openconfig.gnmi_config:
       prefix: configure
       update:
         - path: system/location
