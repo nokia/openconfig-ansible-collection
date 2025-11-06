@@ -19,5 +19,6 @@
 
   - name: dump test output
     debug:
-      msg: '{{ testout.output }}'
+      msg: |
+        {{ testout.output }}
 
