@@ -1,5 +1,5 @@
 ---
-- name: gNMI SET/GET demo for Nokia SROS
+- name: Nokia SR OS Set/Get Configuration
   gather_facts: false
   hosts: nokia_srsim
 
@@ -45,5 +45,4 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output }}
+      msg: {{ testout.output | from_json }}

@@ -1,5 +1,5 @@
 ---
-- name: gNMI Subscribe ONCE for Nokia SR OS
+- name: Nokia SR OS Stream Large Configuration
   gather_facts: false
   hosts: nokia_srsim
   
@@ -16,5 +16,4 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output }}
+      msg: {{ testout.output | from_json }}

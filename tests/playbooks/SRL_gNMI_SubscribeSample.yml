@@ -1,5 +1,5 @@
 ---
-- name: Nokia SRL Streaming Telemetry over gNMI
+- name: Nokia SRL Streaming Telemetry
   gather_facts: false
   hosts: nokia_srlinux
 
@@ -19,6 +19,5 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output }}
+      msg: {{ testout.output | from_json }}
 

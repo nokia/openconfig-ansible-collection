@@ -1,5 +1,5 @@
 ---
-- name: Nokia SR OS Streaming Telemetry over gNMI
+- name: Nokia SR OS Streaming Telemetry
   gather_facts: false
   hosts: nokia_srsim
 
@@ -23,5 +23,4 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output }}
+      msg: {{ testout.output | from_json }}

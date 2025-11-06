@@ -1,5 +1,5 @@
 ---
-- name: gNMI SET/GET demo for Nokia SRL
+- name: Nokia SRL Set/Get Configuration
   gather_facts: false
   hosts: nokia_srlinux
 
@@ -31,5 +31,4 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output }}
+      msg: {{ testout.output | from_json }}

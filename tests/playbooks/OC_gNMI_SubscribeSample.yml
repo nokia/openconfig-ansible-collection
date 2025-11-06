@@ -1,5 +1,5 @@
 ---
-- name: Nokia SRL Streaming Telemetry over gNMI
+- name: OpenConfig Streaming Telemetry
   gather_facts: false
   hosts: all
 
@@ -19,5 +19,4 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output }}
+      msg: {{ testout.output | from_json }}

@@ -1,5 +1,5 @@
 ---
-- name: Get Configuration using gNMI
+- name: gNMI Get Configuration
   gather_facts: false
   hosts: all
 
@@ -14,5 +14,4 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output | from_json }}
+      msg: {{ testout.output | from_json }}

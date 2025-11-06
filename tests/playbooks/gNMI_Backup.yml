@@ -1,5 +1,5 @@
 ---
-- name: NE Backup using gNMI
+- name: gNMI Backup Configuration
   gather_facts: false
   hosts: all
 
@@ -17,5 +17,4 @@
 
   - name: backup details
     debug:
-      msg: |
-        {{ backup_info }}
+      msg: {{ backup_info }}

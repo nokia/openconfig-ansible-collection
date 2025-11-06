@@ -1,5 +1,5 @@
 ---
-- name: NE Restore using gNMI
+- name: gNMI Restore Configuration
   gather_facts: false
   hosts: all
 
@@ -16,5 +16,4 @@
 
   - name: dump test output
     debug:
-      msg: |
-        {{ testout.output }}
+      msg: {{ testout.output | from_json }}
