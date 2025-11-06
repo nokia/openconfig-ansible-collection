@@ -16,7 +16,8 @@
 
   - name: dump test output
     debug:
-      msg: '{{ testout.output }}'
+      msg: |
+        {{ testout.output | from_json }}
 
   - name: Update Nodal Configuration (using gNMI SET)
     nokia.openconfig.gnmi_config:

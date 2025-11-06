@@ -17,4 +17,5 @@
 
   - name: backup details
     debug:
-      msg: {{ backup_info }}
+      msg: |
+        {{ backup_info }}
